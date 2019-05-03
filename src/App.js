@@ -22,18 +22,27 @@ class App extends React.Component{
     const url = 'ws://localhost:31337/chat'; // cant use the create react app proxy because of a bug on 5/3/19
     this.connection = new WebSocket(url);
 
+    // this.connection.onmessage = (e) => {
+    //   console.log(e.data);
+    //   if (this.state.messages.length === 0) {
+    //     this.setState({
+    //       messages: JSON.parse(e.data)
+    //     })
+    //   } else {
+    //     this.setState({
+    //       messages: [...this.state.messages, JSON.parse(e.data)]
+    //     })
+    //   }
+    // };
+
+    // OR....
     this.connection.onmessage = (e) => {
       console.log(e.data);
-      if (this.state.messages.length === 0) {
-        this.setState({
-          messages: JSON.parse(e.data)
-        })
-      } else {
-        this.setState({
-          messages: [...this.state.messages, JSON.parse(e.data)]
-        })
+      const newData = JSON.parse(e.data);
+      this.setState({
+        messages: this.state.messages.concat(newData) // .concat will handle arrays or individual messages
+      })
       }
-    };
 
     // setInterval(async() => {
     //   const {data} = await axios.get('/api');
@@ -42,7 +51,6 @@ class App extends React.Component{
     //     messages: data
     //   });
     // }, 2000);
-
   }
 
   render() {
@@ -69,15 +77,18 @@ class App extends React.Component{
 
   _sendMessage = async () => {
     console.log('App _sendMessage got called')
+    this.connection.send(JSON.stringify({
+      message: this.state.text
+    }));
 
-    await axios({
-      method: 'post',
-      url: '/api',
-      data: qs.stringify({message: this.state.text}),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    });
+    // await axios({
+    //   method: 'post',
+    //   url: '/api',
+    //   data: qs.stringify({message: this.state.text}),
+    //   headers: {
+    //     'Content-Type': 'application/x-www-form-urlencoded'
+    //   }
+    // });
 
     this.setState({
       text: ''
