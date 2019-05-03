@@ -52,15 +52,16 @@ class App extends React.Component{
 
   _sendMessage = async () => {
     console.log('App _sendMessage got called')
+
     await axios({
       method: 'post',
       url: '/api',
-      data: qs.stringify({message: this.state.text})
-      ,
+      data: qs.stringify({message: this.state.text}),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
+
     this.setState({
       text: ''
     })
